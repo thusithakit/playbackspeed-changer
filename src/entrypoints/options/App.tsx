@@ -500,41 +500,49 @@ export function App() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {filteredRules.map((rule) => (
-                    <tr key={rule.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3 px-4 text-center font-mono font-bold text-slate-500">
-                        {rule.priority}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20">
-                          {rule.type.replace('_', ' + ')}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 font-bold text-slate-200">{rule.ruleName}</td>
-                      <td className="py-3 px-4 text-slate-400">{rule.condition}</td>
-                      <td className="py-3 px-4 font-extrabold text-purple-400">{rule.speed.toFixed(2)}x</td>
-                      <td className="py-3 px-4 text-slate-400">{rule.profileName || 'Study Mode'}</td>
-                      <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => handleToggleRuleStatus(rule.id)}
-                          className={`w-8 h-4 rounded-full transition-colors relative inline-block ${
-                            rule.isEnabled ? 'bg-purple-600' : 'bg-slate-800'
-                          }`}
-                        >
-                          <div className={`w-3.5 h-3.5 rounded-full bg-white transition-transform absolute top-0.25 ${
-                            rule.isEnabled ? 'left-4' : 'left-0.5'
-                          }`} />
-                        </button>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2 text-slate-400">
-                          <button onClick={() => handleDeleteRule(rule.id)} className="hover:text-red-400">
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+                  {filteredRules.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-8 text-center text-slate-500 font-medium">
+                        No custom speed rules created yet. Click "+ Add Rule" above to create your first rule!
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredRules.map((rule) => (
+                      <tr key={rule.id} className="hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3 px-4 text-center font-mono font-bold text-slate-500">
+                          {rule.priority}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                            {rule.type.replace('_', ' + ')}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 font-bold text-slate-200">{rule.ruleName}</td>
+                        <td className="py-3 px-4 text-slate-400">{rule.condition}</td>
+                        <td className="py-3 px-4 font-extrabold text-purple-400">{rule.speed.toFixed(2)}x</td>
+                        <td className="py-3 px-4 text-slate-400">{rule.profileName || 'Study Mode'}</td>
+                        <td className="py-3 px-4 text-center">
+                          <button
+                            onClick={() => handleToggleRuleStatus(rule.id)}
+                            className={`w-8 h-4 rounded-full transition-colors relative inline-block ${
+                              rule.isEnabled ? 'bg-purple-600' : 'bg-slate-800'
+                            }`}
+                          >
+                            <div className={`w-3.5 h-3.5 rounded-full bg-white transition-transform absolute top-0.25 ${
+                              rule.isEnabled ? 'left-4' : 'left-0.5'
+                            }`} />
+                          </button>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2 text-slate-400">
+                            <button onClick={() => handleDeleteRule(rule.id)} className="hover:text-red-400">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
