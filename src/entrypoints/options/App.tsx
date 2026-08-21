@@ -211,42 +211,6 @@ export function App() {
               <User size={17} />
               Profiles
             </button>
-
-            <button
-              onClick={() => setActiveNav('analytics')}
-              className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-3 transition-colors ${
-                activeNav === 'analytics'
-                  ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <BarChart3 size={17} />
-              Analytics
-            </button>
-
-            <button
-              onClick={() => setActiveNav('settings')}
-              className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-3 transition-colors ${
-                activeNav === 'settings'
-                  ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <Settings size={17} />
-              Settings
-            </button>
-
-            <button
-              onClick={() => setActiveNav('about')}
-              className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-3 transition-colors ${
-                activeNav === 'about'
-                  ? 'bg-purple-600/20 text-purple-400 border border-purple-500/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-              }`}
-            >
-              <Info size={17} />
-              About
-            </button>
           </nav>
         </div>
 
@@ -285,12 +249,6 @@ export function App() {
             >
               <Plus size={16} />
               Add Rule
-            </button>
-            <button
-              className="p-2.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 rounded-xl transition-colors"
-              title="Share / Export Rules"
-            >
-              <Share2 size={16} />
             </button>
           </div>
         </div>

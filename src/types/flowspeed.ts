@@ -39,12 +39,23 @@ export interface CurrentVideoInfo {
   isManualOverride: boolean;
 }
 
+export interface DailyStat {
+  date: string;
+  timeSavedSeconds: number;
+  videosAdjusted: number;
+}
+
 export interface PlaybackStats {
   videosAdjusted: number;
   videosAdjustedChangePct: number;
   timeSavedHours: number;
   timeSavedChangePct: number;
   rulesCreated: number;
+  totalTimeSavedSeconds: number;
+  todayVideosAdjusted: number;
+  todayTimeSavedSeconds: number;
+  lastUpdatedDate: string;
+  dailyHistory: Record<string, DailyStat>;
 }
 
 export interface FlowSpeedStorage {

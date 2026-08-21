@@ -21,4 +21,12 @@ export default defineConfig({
       open_in_tab: true,
     },
   },
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      manifest.options_ui = {
+        page: 'options.html',
+        open_in_tab: true,
+      };
+    },
+  },
 });
