@@ -159,7 +159,7 @@ export function App() {
   const strokeDashoffset = 250 - gaugePercent * 180;
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans">
+    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans w-full">
       {/* LEFT SIDEBAR NAVIGATION */}
       <aside className="w-64 border-r border-slate-800/80 bg-slate-900/60 p-6 flex flex-col justify-between">
         <div className="space-y-8">

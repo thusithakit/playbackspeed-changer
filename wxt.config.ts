@@ -17,5 +17,8 @@ export default defineConfig({
     action: {
       default_title: 'FlowSpeed',
     },
+    options_ui: {
+      open_in_tab: true,
+    },
   },
 });
