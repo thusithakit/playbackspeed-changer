@@ -14,7 +14,8 @@ import {
   User, 
   Sun, 
   Moon, 
-  ExternalLink 
+  ExternalLink, 
+  PictureInPicture2
 } from 'lucide-react';
 import './style.css';
 
@@ -210,6 +211,27 @@ export function App() {
     setData((prev) => ({ ...prev, rules: updatedRules }));
   };
 
+  const handleToggleOverlay = async () => {
+    console.log('Sending TOGGLE_HUD message to active tab...');
+
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      
+      if (tab?.id) {
+        chrome.tabs.sendMessage(tab.id, { type: 'TOGGLE_HUD' }, (response) => {
+          // Suppress errors if content script isn't loaded on non-YouTube tabs
+          if (chrome.runtime.lastError) {
+            console.warn('Content script not reachable:', chrome.runtime.lastError.message);
+          } else {
+            console.log('Toggle response from page:', response);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send toggle message:', err);
+    }
+  };
+
   const isDark = theme === 'dark';
 
   if (!isLoaded) {
@@ -236,6 +258,15 @@ export function App() {
         </div>
 
         <div className="flex items-center gap-1">
+          <button
+            onClick={handleToggleOverlay}
+            className={`p-1.5 rounded-lg transition-colors ${
+              isDark ? 'hover:bg-slate-800 text-slate-400 hover:text-slate-200' : 'hover:bg-slate-100 text-slate-500'
+            }`}
+            title="Toggle Speed Overlay"
+          >
+            <PictureInPicture2 size={16} />
+          </button>
           <button
             onClick={handleToggleTheme}
             className={`p-1.5 rounded-lg transition-colors ${

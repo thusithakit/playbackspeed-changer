@@ -14,6 +14,7 @@ export default defineContentScript({
     let hudElement: HTMLElement | null = null;
     let currentTargetSpeed = 1.00;
     let isEnforcingRate = false;
+    let isHudUserHidden = false; // Tracks manual visibility state
 
     // Check if Chrome extension context is still valid
     const isExtensionValid = (): boolean => {
@@ -216,12 +217,11 @@ export default defineContentScript({
         transition: opacity 0.2s ease;
       `;
 
-      // Prevent YouTube player from hijacking click/mouse events
+      // Prevent YouTube player from hijacking click/keyboard events
       const stopEvent = (e: Event) => e.stopPropagation();
-      hud.addEventListener('click', stopEvent);
-      hud.addEventListener('mousedown', stopEvent);
-      hud.addEventListener('mouseup', stopEvent);
-      hud.addEventListener('pointerdown', stopEvent);
+      ['click', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach((evt) => {
+        hud.addEventListener(evt, stopEvent);
+      });
 
       hud.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
@@ -232,6 +232,9 @@ export default defineContentScript({
         <div id="fs-badge-val" style="margin-top: 4px; display: inline-block; padding: 2px 6px; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 999px; font-size: 9px; color: #c084fc; font-weight: 600;">
           Global Default
         </div>
+        <div style="margin-top: 8px;">
+          <input type="range" min="0.25" max="4.0" step="0.05" value="1.0" id="speed-slider" style="width: 100%; cursor: pointer; backgroud: #94a3b8;">
+        </div>
         <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
           <button id="fs-hud-minus" style="background: #1e293b; border: 1px solid #334155; color: #fff; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold;">-</button>
           <span id="fs-stepper-val" style="font-weight: bold; font-size: 11px;">1.00</span>
@@ -239,12 +242,16 @@ export default defineContentScript({
         </div>
       `;
 
-      // Attach event listeners ONCE
+      const slider = hud.querySelector<HTMLInputElement>('#speed-slider');
+
+      // Close HUD
       hud.querySelector('#fs-close-hud')?.addEventListener('click', (e) => {
         e.stopPropagation();
+        isHudUserHidden = true; // Mark as user-hidden
         hud.style.display = 'none';
       });
 
+      // Minus Button
       hud.querySelector('#fs-hud-minus')?.addEventListener('click', (e) => {
         e.stopPropagation();
         const currentSpeed = currentTargetSpeed || 1.0;
@@ -252,12 +259,29 @@ export default defineContentScript({
         setManualSpeed(newSpeed);
       });
 
+      // Plus Button
       hud.querySelector('#fs-hud-plus')?.addEventListener('click', (e) => {
         e.stopPropagation();
         const currentSpeed = currentTargetSpeed || 1.0;
         const newSpeed = Math.min(4.0, parseFloat((currentSpeed + 0.25).toFixed(2)));
         setManualSpeed(newSpeed);
       });
+
+      // Range Slider
+      if (slider) {
+        slider.addEventListener('input', (e: Event) => {
+          e.stopPropagation();
+          const target = e.target as HTMLInputElement;
+          const newSpeed = parseFloat(target.value);
+          if (!isNaN(newSpeed)) {
+            setManualSpeed(newSpeed);
+          }
+        });
+
+        slider.addEventListener('change', (e: Event) => {
+          e.stopPropagation();
+        });
+      }
 
       return hud;
     };
@@ -272,14 +296,20 @@ export default defineContentScript({
         playerElem.appendChild(hudElement);
       }
 
-      hudElement.style.display = 'block';
+      hudElement.style.display = isHudUserHidden ? 'none' : 'block';
       const speedVal = hudElement.querySelector('#fs-speed-val');
       const badgeVal = hudElement.querySelector('#fs-badge-val');
       const stepperVal = hudElement.querySelector('#fs-stepper-val');
+      const slider = hudElement.querySelector<HTMLInputElement>('#speed-slider');
 
       if (speedVal) speedVal.textContent = `${speed.toFixed(2)}x`;
       if (badgeVal) badgeVal.textContent = sourceBadge;
       if (stepperVal) stepperVal.textContent = speed.toFixed(2);
+      
+      // Keep slider position in sync with actual applied speed (unless actively sliding)
+      if (slider && document.activeElement !== slider) {
+        slider.value = speed.toString();
+      }
     };
 
     // Main function to calculate & apply playback speed
@@ -351,6 +381,15 @@ export default defineContentScript({
           } else if (msg.type === 'GET_VIDEO_INFO') {
             const videoInfo = extractVideoDetails();
             sendResponse({ videoInfo });
+          } else if (msg.type === 'TOGGLE_HUD') {
+            const hud = document.getElementById('flowspeed-player-hud');
+            if (hud) {
+              isHudUserHidden = hud.style.display !== 'none';
+              hud.style.display = isHudUserHidden ? 'none' : 'block';
+              sendResponse({ success: true, hidden: isHudUserHidden });
+            } else {
+              sendResponse({ success: false, reason: 'HUD element not found' });
+            }
           }
         });
       } catch (e) {

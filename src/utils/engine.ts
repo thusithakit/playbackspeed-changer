@@ -14,7 +14,7 @@ export function resolveSpeedForVideo(
   globalDefaultSpeed = 1.00,
   manualOverrideSpeed: number | null = null
 ): ResolutionResult {
-  if (manualOverrideSpeed !== null && manualOverrideSpeed > 0) {
+  if (manualOverrideSpeed !== null && !isNaN(manualOverrideSpeed)) {
     return {
       speed: manualOverrideSpeed,
       sourceBadge: 'Manual Override',

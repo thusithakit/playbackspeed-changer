@@ -9,7 +9,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   }),
   manifest: {
-    name: 'FlowSpeed — YouTube at your pace',
+    name: 'FlowSpeed — YouTube playback speed changer',
     description: 'Smart per-channel, keyword-based, and profile-driven YouTube playback speed manager.',
     version: '1.0.0',
     permissions: ['storage', 'activeTab', 'scripting'],
